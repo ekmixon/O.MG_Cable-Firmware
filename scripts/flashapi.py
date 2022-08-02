@@ -35,7 +35,10 @@ import zlib
 try:
     import serial
 except ImportError:
-    print("Pyserial is not installed for %s. Check the README for installation instructions." % (sys.executable))
+    print(
+        f"Pyserial is not installed for {sys.executable}. Check the README for installation instructions."
+    )
+
     raise
 
 try:
@@ -75,9 +78,7 @@ DEFAULT_SERIAL_WRITE_TIMEOUT = 10
 
 def timeout_per_mb(seconds_per_mb, size_bytes):
     result = seconds_per_mb * (size_bytes / 1e6)
-    if result < DEFAULT_TIMEOUT:
-        return DEFAULT_TIMEOUT
-    return result
+    return DEFAULT_TIMEOUT if result < DEFAULT_TIMEOUT else result
 
 
 DETECTED_FLASH_SIZES = {0x12: '256KB', 0x13: '512KB', 0x14: '1MB',
@@ -215,9 +216,7 @@ class ESPLoader(object):
 
             for cls in [ESP8266ROM, ESP32ROM]:
                 if date_reg == cls.DATE_REG_VALUE:
-                    inst = cls(detect_port._port, baud, trace_enabled=trace_enabled)
-
-                    return inst
+                    return cls(detect_port._port, baud, trace_enabled=trace_enabled)
         finally:
             print('...Connected.')
         raise FatalError("Unexpected UART datecode value 0x%08x. Failed to autodetect chip type." % date_reg)
@@ -270,7 +269,7 @@ class ESPLoader(object):
             if not wait_response:
                 return
 
-            for retry in range(100):
+            for _ in range(100):
                 p = self.read()
                 if len(p) < 8:
                     continue
@@ -294,7 +293,7 @@ class ESPLoader(object):
         status_bytes = data[-self.STATUS_BYTES_LENGTH:]
 
         if byte(status_bytes, 0) != 0:
-            raise FatalError.WithResult('Failed to %s' % op_description, status_bytes)
+            raise FatalError.WithResult(f'Failed to {op_description}', status_bytes)
 
         if len(data) > self.STATUS_BYTES_LENGTH:
             return data[:-self.STATUS_BYTES_LENGTH]
@@ -308,7 +307,7 @@ class ESPLoader(object):
     def sync(self):
         self.command(self.ESP_SYNC, b'\x07\x07\x12\x20' + 32 * b'\x55',
                      timeout=SYNC_TIMEOUT)
-        for i in range(7):
+        for _ in range(7):
             self.command()
 
     def _setDTR(self, state):
@@ -378,7 +377,8 @@ class ESPLoader(object):
         finally:
             print('')
         raise FatalError(
-            'ERROR: A programmer is detected, but no cable seems plugged in. Please try unplugging and replugging the cable and/or programmer. Please also make sure only one programmer is connected. (%s)' % (last_error))
+            f'ERROR: A programmer is detected, but no cable seems plugged in. Please try unplugging and replugging the cable and/or programmer. Please also make sure only one programmer is connected. ({last_error})'
+        )
 
     def read_reg(self, addr):
 
@@ -431,7 +431,6 @@ class ESPLoader(object):
         except FatalError:
             if self.IS_STUB:
                 raise
-            pass
 
     def flash_begin(self, size, offset):
         num_blocks = (size + self.FLASH_WRITE_SIZE - 1) // self.FLASH_WRITE_SIZE
@@ -493,7 +492,7 @@ class ESPLoader(object):
         print("Uploading stub...")
         for field in ['text', 'data']:
             if field in stub:
-                offs = stub[field + "_start"]
+                offs = stub[f"{field}_start"]
                 length = len(stub[field])
                 blocks = (length + self.ESP_RAM_BLOCK - 1) // self.ESP_RAM_BLOCK
                 self.mem_begin(length, blocks, self.ESP_RAM_BLOCK, offs)
@@ -506,7 +505,7 @@ class ESPLoader(object):
 
         p = self.read()
         if p != b'OHAI':
-            raise FatalError("Failed to start stub. Unexpected response: %s" % p)
+            raise FatalError(f"Failed to start stub. Unexpected response: {p}")
         print("Stub running...")
         return self.STUB_CLASS(self)
 
@@ -609,11 +608,11 @@ class ESPLoader(object):
 
         digest_frame = self.read()
         if len(digest_frame) != 16:
-            raise FatalError('Expected digest, got: %s' % hexify(digest_frame))
+            raise FatalError(f'Expected digest, got: {hexify(digest_frame)}')
         expected_digest = hexify(digest_frame).upper()
         digest = hashlib.md5(data).hexdigest().upper()
         if digest != expected_digest:
-            raise FatalError('Digest mismatch: expected %s, got %s' % (expected_digest, digest))
+            raise FatalError(f'Digest mismatch: expected {expected_digest}, got {digest}')
         return data
 
     def flash_spi_attach(self, hspi_arg):
@@ -720,7 +719,7 @@ class ESPLoader(object):
 
         status = 0
         shift = 0
-        for cmd in [SPIFLASH_RDSR, SPIFLASH_RDSR2, SPIFLASH_RDSR3][0:num_bytes]:
+        for cmd in [SPIFLASH_RDSR, SPIFLASH_RDSR2, SPIFLASH_RDSR3][:num_bytes]:
             status += self.run_spiflash_command(cmd, read_bits=8) << shift
             shift += 8
         return status
@@ -739,7 +738,7 @@ class ESPLoader(object):
             self.run_spiflash_command(enable_cmd)
             self.run_spiflash_command(SPIFLASH_WRSR, struct.pack("<H", new_status))
 
-        for cmd in [SPIFLASH_WRSR, SPIFLASH_WRSR2, SPIFLASH_WRSR3][0:num_bytes]:
+        for cmd in [SPIFLASH_WRSR, SPIFLASH_WRSR2, SPIFLASH_WRSR3][:num_bytes]:
             self.run_spiflash_command(enable_cmd)
             self.run_spiflash_command(cmd, struct.pack("B", new_status & 0xFF))
             new_status >>= 8
@@ -763,14 +762,7 @@ class ESPLoader(object):
         self._setRTS(False)
 
     def soft_reset(self, stay_in_bootloader):
-        if not self.IS_STUB:
-            if stay_in_bootloader:
-                return
-            else:
-
-                self.flash_begin(0, 0)
-                self.flash_finish(False)
-        else:
+        if self.IS_STUB:
             if stay_in_bootloader:
 
                 self.flash_begin(0, 0)
@@ -780,6 +772,13 @@ class ESPLoader(object):
             else:
 
                 self.command(self.ESP_RUN_USER_CODE, wait_response=False)
+
+        elif stay_in_bootloader:
+            return
+        else:
+
+            self.flash_begin(0, 0)
+            self.flash_finish(False)
 
 
 class ESP8266ROM(ESPLoader):
@@ -937,30 +936,25 @@ class ESP32ROM(ESPLoader):
 
     def is_flash_encryption_key_valid(self):
         word0 = self.read_efuse(0)
-        rd_disable = (word0 >> 16) & 0x1
-
-        if rd_disable:
+        if rd_disable := (word0 >> 16) & 0x1:
             return True
-        else:
-            key_word = [0] * 7
-            for i in range(len(key_word)):
-                key_word[i] = self.read_efuse(14 + i)
+        key_word = [0] * 7
+        for i in range(len(key_word)):
+            key_word[i] = self.read_efuse(14 + i)
 
-                if key_word[i] != 0:
-                    return True
-            return False
+            if key_word[i] != 0:
+                return True
+        return False
 
     def get_flash_crypt_config(self):
         word0 = self.read_efuse(0)
         rd_disable = (word0 >> 19) & 0x1
 
-        if rd_disable == 0:
-            word5 = self.read_efuse(5)
-            word5 = (word5 >> 28) & 0xF
-            return word5
-        else:
-
+        if rd_disable != 0:
             return 0xF
+        word5 = self.read_efuse(5)
+        word5 = (word5 >> 28) & 0xF
+        return word5
 
     def get_chip_description(self):
         word3 = self.read_efuse(3)
@@ -985,15 +979,9 @@ class ESP32ROM(ESPLoader):
             features += ["BT"]
 
         chip_ver_dis_app_cpu = word3 & (1 << 0)
-        if chip_ver_dis_app_cpu:
-            features += ["Single Core"]
-        else:
-            features += ["Dual Core"]
-
-        chip_cpu_freq_rated = word3 & (1 << 13)
-        if chip_cpu_freq_rated:
-            chip_cpu_freq_low = word3 & (1 << 12)
-            if chip_cpu_freq_low:
+        features += ["Single Core"] if chip_ver_dis_app_cpu else ["Dual Core"]
+        if chip_cpu_freq_rated := word3 & (1 << 13):
+            if chip_cpu_freq_low := word3 & (1 << 12):
                 features += ["160MHz"]
             else:
                 features += ["240MHz"]
@@ -1003,12 +991,10 @@ class ESP32ROM(ESPLoader):
             features += ["Embedded Flash"]
 
         word4 = self.read_efuse(4)
-        adc_vref = (word4 >> 8) & 0x1F
-        if adc_vref:
+        if adc_vref := (word4 >> 8) & 0x1F:
             features += ["VRef calibration in efuse"]
 
-        blk3_part_res = word3 >> 14 & 0x1
-        if blk3_part_res:
+        if blk3_part_res := word3 >> 14 & 0x1:
             features += ["BLK3 partially reserved"]
 
         word6 = self.read_efuse(6)
@@ -1061,7 +1047,7 @@ class ESP32ROM(ESPLoader):
         if new_voltage == "1.9V":
             reg_val |= (RTC_CNTL_DREFH_SDIO_M | RTC_CNTL_DREFM_SDIO_M | RTC_CNTL_DREFL_SDIO_M)
         self.write_reg(RTC_CNTL_SDIO_CONF_REG, reg_val)
-        print("VDDSDIO regulator set to %s" % new_voltage)
+        print(f"VDDSDIO regulator set to {new_voltage}")
 
 
 class ESP32StubLoader(ESP32ROM):
@@ -1088,15 +1074,14 @@ def LoadFirmwareImage(chip, filename):
     with open(filename, 'rb') as f:
         if chip.lower() == 'esp32':
             return ESP32FirmwareImage(f)
+        magic = ord(f.read(1))
+        f.seek(0)
+        if magic == ESPLoader.ESP_IMAGE_MAGIC:
+            return ESP8266ROMFirmwareImage(f)
+        elif magic == ESPBOOTLOADER.IMAGE_V2_MAGIC:
+            return ESP8266V2FirmwareImage(f)
         else:
-            magic = ord(f.read(1))
-            f.seek(0)
-            if magic == ESPLoader.ESP_IMAGE_MAGIC:
-                return ESP8266ROMFirmwareImage(f)
-            elif magic == ESPBOOTLOADER.IMAGE_V2_MAGIC:
-                return ESP8266V2FirmwareImage(f)
-            else:
-                raise FatalError("Invalid image magic number: %d" % magic)
+            raise FatalError("Invalid image magic number: %d" % magic)
 
 
 class ImageSegment(object):
@@ -1136,7 +1121,7 @@ class ELFSection(ImageSegment):
         self.name = name.decode("utf-8")
 
     def __repr__(self):
-        return "%s %s" % (self.name, super(ELFSection, self).__repr__())
+        return f"{self.name} {super(ELFSection, self).__repr__()}"
 
 
 class BaseFirmwareImage(object):
@@ -1173,9 +1158,10 @@ class BaseFirmwareImage(object):
         return segment
 
     def warn_if_unusual_segment(self, offset, size, is_irom_segment):
-        if not is_irom_segment:
-            if offset > 0x40200000 or offset < 0x3ffe0000 or size > 65536:
-                print('WARNING: Suspicious segment 0x%x, length %d' % (offset, size))
+        if not is_irom_segment and (
+            offset > 0x40200000 or offset < 0x3FFE0000 or size > 65536
+        ):
+            print('WARNING: Suspicious segment 0x%x, length %d' % (offset, size))
 
     def maybe_patch_segment_data(self, f, segment_data):
 
@@ -1195,8 +1181,12 @@ class BaseFirmwareImage(object):
             assert (len(self.elf_sha256) == self.SHA256_DIGEST_LEN)
 
             patch_offset -= self.SEG_HEADER_LEN
-            segment_data = segment_data[0:patch_offset] + self.elf_sha256 + \
-                           segment_data[patch_offset + self.SHA256_DIGEST_LEN:]
+            segment_data = (
+                segment_data[:patch_offset]
+                + self.elf_sha256
+                + segment_data[patch_offset + self.SHA256_DIGEST_LEN :]
+            )
+
         return segment_data
 
     def save_segment(self, f, segment, checksum=None):
@@ -1232,8 +1222,9 @@ class BaseFirmwareImage(object):
         return ESP8266ROM.IROM_MAP_START <= addr < ESP8266ROM.IROM_MAP_END
 
     def get_irom_segment(self):
-        irom_segments = [s for s in self.segments if self.is_irom_addr(s.addr)]
-        if len(irom_segments) > 0:
+        if irom_segments := [
+            s for s in self.segments if self.is_irom_addr(s.addr)
+        ]:
             if len(irom_segments) != 1:
                 raise FatalError('Found %d segments that could be irom0. Bad ELF file?' % len(irom_segments))
             return irom_segments[0]
@@ -1264,7 +1255,7 @@ class ESP8266ROMFirmwareImage(BaseFirmwareImage):
 
     def default_output_name(self, input_file):
 
-        return input_file + '-'
+        return f'{input_file}-'
 
     def save(self, basename):
 
@@ -1274,7 +1265,7 @@ class ESP8266ROMFirmwareImage(BaseFirmwareImage):
                 f.write(irom_segment.data)
 
         normal_segments = self.get_non_irom_segments()
-        with open("%s0x00000.bin" % basename, 'wb') as f:
+        with open(f"{basename}0x00000.bin", 'wb') as f:
             self.write_common_header(f, normal_segments)
             checksum = ESPLoader.ESP_CHECKSUM_MAGIC
             for segment in normal_segments:
@@ -1360,10 +1351,7 @@ OTAFirmwareImage = ESP8266V2FirmwareImage
 
 def esp8266_crc32(data):
     crc = binascii.crc32(data, 0) & 0xFFFFFFFF
-    if crc & 0x80000000:
-        return crc ^ 0xFFFFFFFF
-    else:
-        return crc + 1
+    return crc ^ 0xFFFFFFFF if crc & 0x80000000 else crc + 1
 
 
 class ESP32FirmwareImage(BaseFirmwareImage):
@@ -1418,7 +1406,7 @@ class ESP32FirmwareImage(BaseFirmwareImage):
 
     def default_output_name(self, input_file):
 
-        return "%s.bin" % (os.path.splitext(input_file)[0])
+        return f"{os.path.splitext(input_file)[0]}.bin"
 
     def warn_if_unusual_segment(self, offset, size, is_irom_segment):
         pass
@@ -1435,7 +1423,7 @@ class ESP32FirmwareImage(BaseFirmwareImage):
             flash_segments = [copy.deepcopy(s) for s in sorted(self.segments, key=lambda s: s.addr) if self.is_flash_addr(s.addr)]
             ram_segments = [copy.deepcopy(s) for s in sorted(self.segments, key=lambda s: s.addr) if not self.is_flash_addr(s.addr)]
 
-            if len(flash_segments) > 0:
+            if flash_segments:
                 last_addr = flash_segments[0].addr
                 for segment in flash_segments[1:]:
                     if segment.addr // self.IROM_ALIGN == last_addr // self.IROM_ALIGN:
@@ -1450,7 +1438,7 @@ class ESP32FirmwareImage(BaseFirmwareImage):
 
                 align_past = (segment.addr % self.IROM_ALIGN) - self.SEG_HEADER_LEN
                 pad_len = (self.IROM_ALIGN - (f.tell() % self.IROM_ALIGN)) + align_past
-                if pad_len == 0 or pad_len == self.IROM_ALIGN:
+                if pad_len in [0, self.IROM_ALIGN]:
                     return 0
 
                 pad_len -= self.SEG_HEADER_LEN
@@ -1458,11 +1446,11 @@ class ESP32FirmwareImage(BaseFirmwareImage):
                     pad_len += self.IROM_ALIGN
                 return pad_len
 
-            while len(flash_segments) > 0:
+            while flash_segments:
                 segment = flash_segments[0]
                 pad_len = get_alignment_data_needed(segment)
                 if pad_len > 0:
-                    if len(ram_segments) > 0 and pad_len > self.SEG_HEADER_LEN:
+                    if ram_segments and pad_len > self.SEG_HEADER_LEN:
                         pad_segment = ram_segments[0].split_image(pad_len)
                         if len(ram_segments[0].data) == 0:
                             ram_segments.pop(0)
@@ -1578,7 +1566,7 @@ class ELFFile(object):
         for s in self.sections:
             if s.name == section_name:
                 return s
-        raise ValueError("No section %s in ELF file" % section_name)
+        raise ValueError(f"No section {section_name} in ELF file")
 
     def _read_elf_file(self, f):
 
@@ -1589,16 +1577,16 @@ class ELFFile(object):
              _ehsize, _phentsize, _phnum, shentsize,
              shnum, shstrndx) = struct.unpack("<16sHHLLLLLHHHHHH", f.read(LEN_FILE_HEADER))
         except struct.error as e:
-            raise FatalError("Failed to read a valid ELF header from %s: %s" % (self.name, e))
+            raise FatalError(f"Failed to read a valid ELF header from {self.name}: {e}")
 
         if byte(ident, 0) != 0x7f or ident[1:4] != b'ELF':
-            raise FatalError("%s has invalid ELF magic header" % self.name)
+            raise FatalError(f"{self.name} has invalid ELF magic header")
         if machine != 0x5e:
             raise FatalError("%s does not appear to be an Xtensa ELF file. e_machine=%04x" % (self.name, machine))
         if shentsize != self.LEN_SEC_HEADER:
             raise FatalError("%s has unexpected section header entry size 0x%x (not 0x28)" % (self.name, shentsize, self.LEN_SEC_HEADER))
         if shnum == 0:
-            raise FatalError("%s has 0 section headers" % (self.name))
+            raise FatalError(f"{self.name} has 0 section headers")
         self._read_sections(f, shoff, shnum, shstrndx)
 
     def _read_sections(self, f, section_header_offs, section_header_count, shstrndx):
@@ -1619,7 +1607,7 @@ class ELFFile(object):
         all_sections = [read_section_header(offs) for offs in section_header_offsets]
         prog_sections = [s for s in all_sections if s[1] == ELFFile.SEC_TYPE_PROGBITS]
 
-        if not (shstrndx * self.LEN_SEC_HEADER) in section_header_offsets:
+        if shstrndx * self.LEN_SEC_HEADER not in section_header_offsets:
             raise FatalError("ELF file has no STRTAB section at shstrndx %d" % shstrndx)
         _, sec_type, _, sec_size, sec_offs = read_section_header(shstrndx * self.LEN_SEC_HEADER)
         if sec_type != ELFFile.SEC_TYPE_STRTAB:
@@ -1656,7 +1644,7 @@ def slip_reader(port, trace_function):
         if read_bytes == b'':
             waiting_for = "header" if partial_packet is None else "content"
             trace_function("Timed out waiting for packet %s", waiting_for)
-            raise FatalError("Timed out waiting for packet %s" % waiting_for)
+            raise FatalError(f"Timed out waiting for packet {waiting_for}")
         trace_function("Read %d bytes: %s", len(read_bytes), HexFormatter(read_bytes))
         for b in read_bytes:
             if type(b) is int:
@@ -1668,7 +1656,7 @@ def slip_reader(port, trace_function):
                 else:
                     trace_function("Read invalid data: %s", HexFormatter(read_bytes))
                     trace_function("Remaining data in serial buffer: %s", HexFormatter(port.read(port.inWaiting())))
-                    raise FatalError('Invalid head of packet (0x%s)' % hexify(b))
+                    raise FatalError(f'Invalid head of packet (0x{hexify(b)})')
             elif in_escape:
                 in_escape = False
                 if b == b'\xdc':
@@ -1678,7 +1666,7 @@ def slip_reader(port, trace_function):
                 else:
                     trace_function("Read invalid data: %s", HexFormatter(read_bytes))
                     trace_function("Remaining data in serial buffer: %s", HexFormatter(port.read(port.inWaiting())))
-                    raise FatalError('Invalid SLIP escape (0xdb, 0x%s)' % (hexify(b)))
+                    raise FatalError(f'Invalid SLIP escape (0xdb, 0x{hexify(b)})')
             elif b == b'\xdb':
                 in_escape = True
             elif b == b'\xc0':
@@ -1708,15 +1696,16 @@ def flash_size_bytes(size):
     elif "KB" in size:
         return int(size[:size.index("KB")]) * 1024
     else:
-        raise FatalError("Unknown size %s" % size)
+        raise FatalError(f"Unknown size {size}")
 
 
 def hexify(s, uppercase=True):
     format_str = '%02X' if uppercase else '%02x'
-    if not PYTHON2:
-        return ''.join(format_str % c for c in s)
-    else:
-        return ''.join(format_str % ord(c) for c in s)
+    return (
+        ''.join(format_str % ord(c) for c in s)
+        if PYTHON2
+        else ''.join(format_str % c for c in s)
+    )
 
 
 class HexFormatter(object):
@@ -1726,18 +1715,17 @@ class HexFormatter(object):
         self._auto_split = auto_split
 
     def __str__(self):
-        if self._auto_split and len(self._s) > 16:
-            result = ""
-            s = self._s
-            while len(s) > 0:
-                line = s[:16]
-                ascii_line = "".join(c if (c == ' ' or (c in string.printable and c not in string.whitespace))
-                                     else '.' for c in line.decode('ascii', 'replace'))
-                s = s[16:]
-                result += "\n    %-16s %-16s | %s" % (hexify(line[:8], False), hexify(line[8:], False), ascii_line)
-            return result
-        else:
+        if not self._auto_split or len(self._s) <= 16:
             return hexify(self._s, False)
+        result = ""
+        s = self._s
+        while len(s) > 0:
+            line = s[:16]
+            ascii_line = "".join(c if (c == ' ' or (c in string.printable and c not in string.whitespace))
+                                 else '.' for c in line.decode('ascii', 'replace'))
+            s = s[16:]
+            result += "\n    %-16s %-16s | %s" % (hexify(line[:8], False), hexify(line[8:], False), ascii_line)
+        return result
 
 
 def pad_to(data, alignment, pad_character=b'\xFF'):
@@ -1753,18 +1741,23 @@ class FatalError(RuntimeError):
 
     @staticmethod
     def WithResult(message, result):
-        message += " (result was %s)" % hexify(result)
+        message += f" (result was {hexify(result)})"
         return FatalError(message)
 
 
 class NotImplementedInROMError(FatalError):
     def __init__(self, bootloader, func):
-        FatalError.__init__(self, "%s ROM does not support function %s." % (bootloader.CHIP_NAME, func.__name__))
+        FatalError.__init__(
+            self,
+            f"{bootloader.CHIP_NAME} ROM does not support function {func.__name__}.",
+        )
 
 
 class NotSupportedError(FatalError):
     def __init__(self, esp, function_name):
-        FatalError.__init__(self, "Function %s is not supported for %s." % (function_name, esp.CHIP_NAME))
+        FatalError.__init__(
+            self, f"Function {function_name} is not supported for {esp.CHIP_NAME}."
+        )
 
 
 #
@@ -1782,7 +1775,7 @@ def load_ram(esp, args):
 
         seq = 0
         while len(seg.data) > 0:
-            esp.mem_block(seg.data[0:esp.ESP_RAM_BLOCK], seq)
+            esp.mem_block(seg.data[:esp.ESP_RAM_BLOCK], seq)
             seg.data = seg.data[esp.ESP_RAM_BLOCK:]
             seq += 1
         print('done!')
@@ -1847,7 +1840,7 @@ def _update_image_flash_params(esp, address, args, image):
     flash_params = struct.pack(b'BB', flash_mode, flash_size + flash_freq)
     if flash_params != image[2:4]:
         print('Flash params set to 0x%04x' % struct.unpack(">H", flash_params))
-        image = image[0:2] + flash_params + image[4:]
+        image = image[:2] + flash_params + image[4:]
     return image
 
 

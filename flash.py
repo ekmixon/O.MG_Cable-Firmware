@@ -87,16 +87,16 @@ def omg_dependency_imports():
             os.mkdir("./scripts/")
         dependencies = ['flashapi.py', 'miniterm.py']
         for dependency in dependencies:
-            file_path = "scripts/"+dependency
+            file_path = f"scripts/{dependency}"
             file_url = FIRMWARE_URL.replace("%BRANCH%",BRANCH) + "/scripts/" + dependency
             try:
                 res = get_resource_file(file_url)
                 if res['status'] == 200:
                     with open(file_path,"wb") as f:
                             f.write(res['data'])
-                    print("succesfully fetched missing dependency %s from %s"%(dependency,file_url))
+                    print(f"succesfully fetched missing dependency {dependency} from {file_url}")
             except:
-                print("failed to get missing dependency %s from %s"%(dependency,file_url))
+                print(f"failed to get missing dependency {dependency} from {file_url}")
     try:
         global flashapi
         from scripts import flashapi as flashapi 
@@ -143,7 +143,7 @@ def ask_for_flasherhwver():
     """
     #if FLASHER_SKIP_ON_VALID_DETECTION and FLASHER_VERSION != 1:
     #    return FLASHER_VERSION
-    FLASHER_VERSION = 1    
+    FLASHER_VERSION = 1
     flash_version = FLASHER_VERSION
     if FLASHER_VERSION is None:
         while True:
@@ -151,7 +151,7 @@ def ask_for_flasherhwver():
                 flash_version = int(raw_input("--- Enter version of programmer hardware [Available Versions: Programmer V1 or Programmer V2]: ".format(FLASHVER=flash_version)))
             except:
                 pass
-            if flash_version == 1 or flash_version == 2:
+            if flash_version in {1, 2}:
                 break
         print("<<< USER REPORTED HARDWARE FLASHER REVISION AS VERSION", flash_version, ">>>")
     return flash_version    
@@ -166,16 +166,16 @@ def ask_for_port():
     sys.stderr.write('\n--- Available ports:\n')
     ports = []
     skippedports = []
+    includedport = "CP210"
     for n, (port, desc, hwid) in enumerate(sorted(comports()), 1):
-        includedport = "CP210"
         if includedport in desc:
             i+=1
             sys.stderr.write('--- {:2}: {:20} {!r}\n'.format(i, port, desc))
             ports.append(port)
         else: 
             skippedports.append(port)
+    num_ports = len(ports)
     while True:
-        num_ports = len(ports)
         #if num_ports == 1:
         #    return ports[0]
         #else:
@@ -201,7 +201,7 @@ def omg_flash(command,tries=2):
             flashapi.main(command)
             return True
         except (flashapi.FatalError, serial.SerialException, serial.serialutil.SerialException) as e:
-            print("Error", str(e))
+            print("Error", e)
             return False
     else:
         ret = False
@@ -215,11 +215,10 @@ def omg_flash(command,tries=2):
             except (flashapi.FatalError, serial.SerialException, serial.serialutil.SerialException) as e:
                 tries-=1
                 print("Unsuccessful communication,", tries, "trie(s) remain")
-        if not ret:
-            print("<<< ERROR DURING FLASHING PROCESS PREVENTED SUCCESSFUL FLASH. TRY TO RECONNECT CABLE OR REBOOT >>>")
-            complete(1)
-        else:
+        if ret:
             return ret
+        print("<<< ERROR DURING FLASHING PROCESS PREVENTED SUCCESSFUL FLASH. TRY TO RECONNECT CABLE OR REBOOT >>>")
+        complete(1)
 
 def complete(statuscode, message="Press Enter to continue..."):
     input(message)
@@ -231,15 +230,13 @@ def make_request(url):
     if ":" in str(urlparse.netloc):
         url_parts = str(urlparse.netloc).split(":")
     else:
-        port = 443
-        if urlparse.scheme != "https":
-            port = 80
+        port = 80 if urlparse.scheme != "https" else 443
         url_parts = (urlparse.netloc, port)
-    if urlparse.scheme == "https":
-        conn = http.client.HTTPSConnection(host=url_parts[0], port=url_parts[1])
-    else:
-        conn = http.client.HTTPConnection(host=url_parts[0], port=url_parts[1])
-    return conn
+    return (
+        http.client.HTTPSConnection(host=url_parts[0], port=url_parts[1])
+        if urlparse.scheme == "https"
+        else http.client.HTTPConnection(host=url_parts[0], port=url_parts[1])
+    )
 
 def get_resource_file(url,params=None):
     pyver = sys.version_info
@@ -267,32 +264,31 @@ def omg_fetch_latest_firmware(create_dst_dir=False,dst_dir="./firmware"):
     data = None
     if mem_map is not None and 'status' in mem_map and mem_map['status'] == 200:
         # attempt to create dir
-        if not dst_dir=="./" or create_dst_dir:
+        if dst_dir != "./" or create_dst_dir:
             if os.path.exists(dst_dir):
                 for f in os.listdir(dst_dir):
-                    os.remove(dst_dir + "/" + f)
+                    os.remove(f"{dst_dir}/{f}")
                 os.rmdir(dst_dir)
             os.mkdir(dst_dir)
         json_map = json.loads(mem_map['data'])
         data = json_map
         pymap = {}
         dl_files = []
-        for flash_size,files in json_map.items():
-            mem_size = int(int(flash_size)/1024)
+        for flash_size,files in data.items():
+            mem_size = int(flash_size) // 1024
             file_map = []
             for resource in files:
-                file_map.append(resource['offset'])
-                file_map.append(resource['name'])
+                file_map.extend((resource['offset'], resource['name']))
                 if resource['name'] not in dl_files:
                     dl_files.append(resource['name'])
             pymap[mem_size]=file_map
         #pprint(pymap)
         #pprint(dl_files)
         for dl_file in dl_files:
-            dl_url = ("%s/firmware/%s"%(FIRMWARE_URL,dl_file)).replace("%BRANCH%",curr_branch)
-            n = get_resource_file(dl_url)    
+            dl_url = f"{FIRMWARE_URL}/firmware/{dl_file}".replace("%BRANCH%", curr_branch)
+            n = get_resource_file(dl_url)
             if n is not None and 'data' in n and n['status']==200:
-                dl_file_path = "%s/%s"%(dst_dir,dl_file)
+                dl_file_path = f"{dst_dir}/{dl_file}"
                 with open(dl_file_path,'wb') as f:
                     print("writing %d bytes of data to file %s from %s"%(len(n['data']),dl_file_path,dl_url))
                     f.write(n['data'])
@@ -300,7 +296,7 @@ def omg_fetch_latest_firmware(create_dst_dir=False,dst_dir="./firmware"):
 
 def omg_locate():
     def omg_check(fw_path):
-    
+
         pprint(fw_path)
         PAGE_LOCATED = False
         INIT_LOCATED = False
@@ -346,16 +342,16 @@ def omg_locate():
         return (PAGE_LOCATED,INIT_LOCATED,ELF0_LOCATED,ELF1_LOCATED,ELF2_LOCATED)
 
     # do lookups
-    fw_path = FIRMWARE_DIR + "/"
+    fw_path = f"{FIRMWARE_DIR}/"
     if not os.path.exists(fw_path):
         omg_fetch_latest_firmware(True,fw_path)
     # try one
     PAGE_LOCATED,INIT_LOCATED,ELF0_LOCATED,ELF1_LOCATED,ELF2_LOCATED = omg_check(fw_path)
-    
+
     if not (PAGE_LOCATED and INIT_LOCATED and ELF0_LOCATED and ELF1_LOCATED and ELF2_LOCATED):
         omg_fetch_latest_firmware(False,fw_path)
         PAGE_LOCATED,INIT_LOCATED,ELF0_LOCATED,ELF1_LOCATED,ELF2_LOCATED = omg_check(fw_path)
-    
+
     # now see if things worked
     if PAGE_LOCATED and INIT_LOCATED and ELF0_LOCATED and ELF1_LOCATED and ELF2_LOCATED:
         print("\n<<< ALL FIRMWARE FILES LOCATED >>>\n")
@@ -377,14 +373,14 @@ def omg_probe():
 
     detected_ports = ask_for_port()
     devices = detected_ports
- 
+
     FLASHER_VERSION = ask_for_flasherhwver()
-    
-    
+
+
     results.PORT_PATH = devices
     if len(devices) > 1:
         results.PROG_FOUND = True
-    
+
     if results.PROG_FOUND:
         print("\n<<< O.MG-CABLE-PROGRAMMER WAS FOUND ON {PORT} >>>".format(PORT=results.PORT_PATH))
     else:
@@ -408,21 +404,104 @@ def omg_patch(_ssid, _pass, _mode):
                 byte = f.read(1)
                 BYTES.append(byte)
 
-            offset = 0
+            offset = next(
+                (
+                    i
+                    for i, byte in enumerate(BYTES)
+                    if chr(
+                        int(
+                            hex(int.from_bytes(BYTES[i + 0], "big"))[
+                                2:
+                            ].upper(),
+                            16,
+                        )
+                    )
+                    == 'a'
+                    and chr(
+                        int(
+                            hex(int.from_bytes(BYTES[i + 1], "big"))[
+                                2:
+                            ].upper(),
+                            16,
+                        )
+                    )
+                    == 'c'
+                    and chr(
+                        int(
+                            hex(int.from_bytes(BYTES[i + 2], "big"))[
+                                2:
+                            ].upper(),
+                            16,
+                        )
+                    )
+                    == 'c'
+                    and chr(
+                        int(
+                            hex(int.from_bytes(BYTES[i + 3], "big"))[
+                                2:
+                            ].upper(),
+                            16,
+                        )
+                    )
+                    == 'e'
+                    and chr(
+                        int(
+                            hex(int.from_bytes(BYTES[i + 4], "big"))[
+                                2:
+                            ].upper(),
+                            16,
+                        )
+                    )
+                    == 's'
+                    and chr(
+                        int(
+                            hex(int.from_bytes(BYTES[i + 5], "big"))[
+                                2:
+                            ].upper(),
+                            16,
+                        )
+                    )
+                    == 's'
+                    and chr(
+                        int(
+                            hex(int.from_bytes(BYTES[i + 6], "big"))[
+                                2:
+                            ].upper(),
+                            16,
+                        )
+                    )
+                    == '.'
+                    and chr(
+                        int(
+                            hex(int.from_bytes(BYTES[i + 7], "big"))[
+                                2:
+                            ].upper(),
+                            16,
+                        )
+                    )
+                    == 'l'
+                    and chr(
+                        int(
+                            hex(int.from_bytes(BYTES[i + 8], "big"))[
+                                2:
+                            ].upper(),
+                            16,
+                        )
+                    )
+                    == 'o'
+                    and chr(
+                        int(
+                            hex(int.from_bytes(BYTES[i + 9], "big"))[
+                                2:
+                            ].upper(),
+                            16,
+                        )
+                    )
+                    == 'g'
+                ),
+                0,
+            )
 
-            for i, byte in enumerate(BYTES):
-                if chr(int(hex(int.from_bytes(BYTES[i + 0], "big"))[2:].upper(), 16)) == 'a':
-                    if chr(int(hex(int.from_bytes(BYTES[i + 1], "big"))[2:].upper(), 16)) == 'c':
-                        if chr(int(hex(int.from_bytes(BYTES[i + 2], "big"))[2:].upper(), 16)) == 'c':
-                            if chr(int(hex(int.from_bytes(BYTES[i + 3], "big"))[2:].upper(), 16)) == 'e':
-                                if chr(int(hex(int.from_bytes(BYTES[i + 4], "big"))[2:].upper(), 16)) == 's':
-                                    if chr(int(hex(int.from_bytes(BYTES[i + 5], "big"))[2:].upper(), 16)) == 's':
-                                        if chr(int(hex(int.from_bytes(BYTES[i + 6], "big"))[2:].upper(), 16)) == '.':
-                                            if chr(int(hex(int.from_bytes(BYTES[i + 7], "big"))[2:].upper(), 16)) == 'l':
-                                                if chr(int(hex(int.from_bytes(BYTES[i + 8], "big"))[2:].upper(), 16)) == 'o':
-                                                    if chr(int(hex(int.from_bytes(BYTES[i + 9], "big"))[2:].upper(), 16)) == 'g':
-                                                        offset = i
-                                                        break
         offset += 24
         d = hex(int.from_bytes(BYTES[offset + 0], "big"))[2:].zfill(2)
         c = hex(int.from_bytes(BYTES[offset + 1], "big"))[2:].zfill(2)
@@ -444,7 +523,7 @@ def omg_patch(_ssid, _pass, _mode):
                     f.write(bytes([byte]))
                 else:
                     f.write(byte)
-        #print("\n<<< PATCH SUCCESS, FLASHING FIRMWARE >>>\n")
+            #print("\n<<< PATCH SUCCESS, FLASHING FIRMWARE >>>\n")
     except KeyError:
         print("\n<<< PATCH FAILURE, ABORTING >>>")
         complete(1)
@@ -458,7 +537,7 @@ def omg_input():
 
         try:
             WIFI_MODE = input("\nSELECT WIFI MODE\n1: STATION - (Connect to existing network. 2.4GHz)\n2: ACCESS POINT - (Create SSID. IP: 192.168.4.1)\n")
-            if WIFI_MODE == '' or WIFI_MODE == '1' or WIFI_MODE == '2':
+            if WIFI_MODE in ['', '1', '2']:
                 SANITIZED_SELECTION = True
         except:
             pass
@@ -466,10 +545,7 @@ def omg_input():
     if len(WIFI_MODE) == 1:
         results.WIFI_DEFAULTS = False
         results.WIFI_MODE = WIFI_MODE
-        if WIFI_MODE == '1':
-            results.WIFI_TYPE = 'STATION'
-        else:
-            results.WIFI_TYPE = 'ACCESS POINT'
+        results.WIFI_TYPE = 'STATION' if WIFI_MODE == '1' else 'ACCESS POINT'
     else:
         results.WIFI_DEFAULTS = True
 
@@ -563,23 +639,21 @@ if __name__ == '__main__':
                 'EXIT FLASHER',
             ]
             print("Available Options \n")
-            i = 1
-            for menu_option in menu_options:
-                 print(i," ",menu_option,end="")
-                 if i == 1:
-                     print(" (DEFAULT)")
-                 else:
-                     print("")
-                 i+=1    
-            menu_options = [''] 
+            for i, menu_option in enumerate(menu_options, start=1):
+                print(i," ",menu_option,end="")
+                if i == 1:
+                    print(" (DEFAULT)")
+                else:
+                    print("")
+            menu_options = ['']
             MENU_MODE = str(input("Select Option: ")).replace(" ","")
-            if MENU_MODE == '1' or MENU_MODE == '2' or MENU_MODE == '3' or MENU_MODE == '4' or MENU_MODE == '5' or MENU_MODE == '6' or  MENU_MODE == '7' or  MENU_MODE == '8':
+            if MENU_MODE in {'1', '2', '3', '4', '5', '6', '7', '8'}:
                 SANITIZED_SELECTION = True
         except:
             pass
-    # handle python serial exceptions here        
+    # handle python serial exceptions here
     try:
-    
+        
         if MENU_MODE == '1':
             print("\nFIRMWARE UPGRADE")
             #mac, flash_size = get_dev_info(results.PORT_PATH)
@@ -597,10 +671,28 @@ if __name__ == '__main__':
         elif MENU_MODE == '2':
             print("\nFACTORY RESET")
             mac, flash_size = get_dev_info(results.PORT_PATH)
-            if flash_size < 0x200000:
-                command = ['--baud', baudrate, '--port', results.PORT_PATH, 'erase_region', '0x70000', '0x8A000']
-            else:
-                command = ['--baud', baudrate, '--port', results.PORT_PATH, 'erase_region', '0x70000', '0x18A000']
+            command = (
+                [
+                    '--baud',
+                    baudrate,
+                    '--port',
+                    results.PORT_PATH,
+                    'erase_region',
+                    '0x70000',
+                    '0x8A000',
+                ]
+                if flash_size < 0x200000
+                else [
+                    '--baud',
+                    baudrate,
+                    '--port',
+                    results.PORT_PATH,
+                    'erase_region',
+                    '0x70000',
+                    '0x18A000',
+                ]
+            )
+
             omg_flash(command)
 
             #omg_input()
@@ -636,19 +728,57 @@ if __name__ == '__main__':
             omg_input()
             repeating = ''
             while repeating != 'e':
-                if flash_size < 0x200000:
-                    command = ['--baud', baudrate, '--port', results.PORT_PATH, 'erase_region', '0x70000', '0x8A000']
-                else:
-                    command = ['--baud', baudrate, '--port', results.PORT_PATH, 'erase_region', '0x70000', '0x18A000']
+                command = (
+                    [
+                        '--baud',
+                        baudrate,
+                        '--port',
+                        results.PORT_PATH,
+                        'erase_region',
+                        '0x70000',
+                        '0x8A000',
+                    ]
+                    if flash_size < 0x200000
+                    else [
+                        '--baud',
+                        baudrate,
+                        '--port',
+                        results.PORT_PATH,
+                        'erase_region',
+                        '0x70000',
+                        '0x18A000',
+                    ]
+                )
+
                 repeating = input("\n\n<<< PRESS ENTER TO RESTORE NEXT CABLE, OR 'E' TO EXIT >>>\n")
         elif MENU_MODE == '5':
             print("\nBACKUP CABLE")
             mac, flash_size = get_dev_info(results.PORT_PATH)
             filename = "backup-{MACLOW}-{TIMESTAMP}.img".format(MACLOW="".join([hex(m).lstrip("0x") for m in mac]).lower(),TIMESTAMP=int(time()))
-            if flash_size < 0x200000:
-                command = ['--baud', baudrate, '--port', results.PORT_PATH, 'read_flash', '0x00000', '0x100000', filename]
-            else:
-                command = ['--baud', baudrate, '--port', results.PORT_PATH, 'read_flash', '0x00000', '0x200000', filename]
+            command = (
+                [
+                    '--baud',
+                    baudrate,
+                    '--port',
+                    results.PORT_PATH,
+                    'read_flash',
+                    '0x00000',
+                    '0x100000',
+                    filename,
+                ]
+                if flash_size < 0x200000
+                else [
+                    '--baud',
+                    baudrate,
+                    '--port',
+                    results.PORT_PATH,
+                    'read_flash',
+                    '0x00000',
+                    '0x200000',
+                    filename,
+                ]
+            )
+
             omg_flash(command)
             print('Backup written to ', filename)
         elif MENU_MODE == '6':
@@ -665,7 +795,10 @@ if __name__ == '__main__':
         else:
             print("<<< NO VALID INPUT WAS DETECTED. >>>")
     except (flashapi.FatalError, serial.SerialException, serial.serialutil.SerialException) as e:
-        print("<<< FATAL ERROR: %s. PLEASE DISCONNECT AND RECONNECT CABLE AND START TASK AGAIN >>>"%str(e))
+        print(
+            f"<<< FATAL ERROR: {str(e)}. PLEASE DISCONNECT AND RECONNECT CABLE AND START TASK AGAIN >>>"
+        )
+
         sys.exit(1) # special case
     complete(0)
     

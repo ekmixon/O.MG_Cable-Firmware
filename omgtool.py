@@ -119,116 +119,104 @@ class Duckpiler():
 	
 	# this allows us to build method "modules" to easily add commands and features
 	def commands(self):
-		commands = {
-				"STRING":self.cmd_string,
-				"SELF-DESTRUCT":self.cmd_selfdestruct,
-				"DELAY":self.cmd_delay,
-				"NEUTER":self.cmd_neuter,
-				"CONTROL":self.cmd_ctrl,
-				"WAIT_FOR_PRESENT":self.cmd_waitforpresent,
-				"WAIT_FOR_PRESENT":self.cmd_waitfornotpresent,
-				"IF_PRESENT":self.cmd_ifpresent,
-				"IF_PRESENT":self.cmd_ifnotpresent,
-				"PRO":self.cmd_pro,
-				"MAN":self.cmd_man,
-				"VID":self.cmd_vid,
-				"PID":self.cmd_pid,
-				"CTRL":self.cmd_ctrl,
-				"SHIFT":self.cmd_shift,
-				"ALT":self.cmd_alt,
-				"GUI":self.cmd_gui,
-				"WINDOWS":self.cmd_gui,
-				"ESC":self.cmd_esc,
-				"ESCAPE":self.cmd_esc,
-				"RIGHT":self.cmd_right,
-				"RIGHTARROW":self.cmd_right,
-				"LEFT":self.cmd_left,
-				"LEFTARROW":self.cmd_left,
-				"DOWN":self.cmd_down,
-				"DOWNARROW":self.cmd_down,
-				"UP":self.cmd_up,
-				"UPARROW":self.cmd_up,
-				"PAGEUP":self.processKey,
-				"PAGEDOWN":self.processKey,
-				"ENTER":self.processKey,
-				"TAB":self.processKey,
-				"SPACE":self.processKey,
-				"CAPSLOCK":self.processKey,
-				"DELETE":self.processKey,
-				"END":self.processKey,
-				"HOME":self.processKey,
-				"INSERT":self.processKey,
-				"NUMLOCK":self.processKey,
-				"SCROLLLOCK":self.processKey,
-				"PAUSE":self.processKey,
-				"BREAK":self.processKey,
-				"A":self.processKey,
-				"B":self.processKey,
-				"C":self.processKey,
-				"D":self.processKey,
-				"E":self.processKey,
-				"F":self.processKey,
-				"G":self.processKey,
-				"H":self.processKey,
-				"I":self.processKey,
-				"J":self.processKey,
-				"K":self.processKey,
-				"L":self.processKey,
-				"M":self.processKey,
-				"N":self.processKey,
-				"O":self.processKey,
-				"P":self.processKey,
-				"Q":self.processKey,
-				"R":self.processKey,
-				"S":self.processKey,
-				"T":self.processKey,
-				"U":self.processKey,
-				"V":self.processKey,
-				"W":self.processKey,
-				"X":self.processKey,
-				"Y":self.processKey,
-				"Z":self.processKey,
-				"F1":self.processKey,
-				"F2":self.processKey,
-				"F3":self.processKey,
-				"F4":self.processKey,
-				"F5":self.processKey,
-				"F6":self.processKey,
-				"F7":self.processKey,
-				"F8":self.processKey,
-				"F9":self.processKey,
-				"F10":self.processKey,
-				"F11":self.processKey,
-				"F12":self.processKey			
+		return {
+			"STRING": self.cmd_string,
+			"SELF-DESTRUCT": self.cmd_selfdestruct,
+			"DELAY": self.cmd_delay,
+			"NEUTER": self.cmd_neuter,
+			"CONTROL": self.cmd_ctrl,
+			"WAIT_FOR_PRESENT": self.cmd_waitforpresent,
+			"WAIT_FOR_PRESENT": self.cmd_waitfornotpresent,
+			"IF_PRESENT": self.cmd_ifpresent,
+			"IF_PRESENT": self.cmd_ifnotpresent,
+			"PRO": self.cmd_pro,
+			"MAN": self.cmd_man,
+			"VID": self.cmd_vid,
+			"PID": self.cmd_pid,
+			"CTRL": self.cmd_ctrl,
+			"SHIFT": self.cmd_shift,
+			"ALT": self.cmd_alt,
+			"GUI": self.cmd_gui,
+			"WINDOWS": self.cmd_gui,
+			"ESC": self.cmd_esc,
+			"ESCAPE": self.cmd_esc,
+			"RIGHT": self.cmd_right,
+			"RIGHTARROW": self.cmd_right,
+			"LEFT": self.cmd_left,
+			"LEFTARROW": self.cmd_left,
+			"DOWN": self.cmd_down,
+			"DOWNARROW": self.cmd_down,
+			"UP": self.cmd_up,
+			"UPARROW": self.cmd_up,
+			"PAGEUP": self.processKey,
+			"PAGEDOWN": self.processKey,
+			"ENTER": self.processKey,
+			"TAB": self.processKey,
+			"SPACE": self.processKey,
+			"CAPSLOCK": self.processKey,
+			"DELETE": self.processKey,
+			"END": self.processKey,
+			"HOME": self.processKey,
+			"INSERT": self.processKey,
+			"NUMLOCK": self.processKey,
+			"SCROLLLOCK": self.processKey,
+			"PAUSE": self.processKey,
+			"BREAK": self.processKey,
+			"A": self.processKey,
+			"B": self.processKey,
+			"C": self.processKey,
+			"D": self.processKey,
+			"E": self.processKey,
+			"F": self.processKey,
+			"G": self.processKey,
+			"H": self.processKey,
+			"I": self.processKey,
+			"J": self.processKey,
+			"K": self.processKey,
+			"L": self.processKey,
+			"M": self.processKey,
+			"N": self.processKey,
+			"O": self.processKey,
+			"P": self.processKey,
+			"Q": self.processKey,
+			"R": self.processKey,
+			"S": self.processKey,
+			"T": self.processKey,
+			"U": self.processKey,
+			"V": self.processKey,
+			"W": self.processKey,
+			"X": self.processKey,
+			"Y": self.processKey,
+			"Z": self.processKey,
+			"F1": self.processKey,
+			"F2": self.processKey,
+			"F3": self.processKey,
+			"F4": self.processKey,
+			"F5": self.processKey,
+			"F6": self.processKey,
+			"F7": self.processKey,
+			"F8": self.processKey,
+			"F9": self.processKey,
+			"F10": self.processKey,
+			"F11": self.processKey,
+			"F12": self.processKey,
 		}
-		return commands
 
 	def getOutput(self):
 		return self.output
 	
 	def parseLine(self,ln):
-			res = {}
-			res['raw']=ln
-			params = {}
-			# using shlex provides a stronger processing support then by simply splitting. such as quotes.
-			fields = shlex.split(ln)
-			command = str(fields.pop(0))
-			parse_pos = 0
-			for field in fields:
-				# if "=" in field:
-				# 	# we	might have a param
-				# 	param = str(field).replace("'","").replace("\"","").split("=")
-				# 	# give us a chance to clean up
-				# 	param_key = str(param[0]).strip()
-				# 	param_val = str(param[1]).strip()
-				# 	params[param_key]=param_val
-				# 	del(fields[parse_pos])
-				parse_pos+=1
-			# remaining fields get added
-			res['fields'] = fields
-			res['params'] = params
-			res['command'] = command
-			return res
+		res = {'raw': ln}
+		params = {}
+		# using shlex provides a stronger processing support then by simply splitting. such as quotes.
+		fields = shlex.split(ln)
+		command = str(fields.pop(0))
+		parse_pos = sum(1 for _ in fields)
+		# remaining fields get added
+		res['fields'] = fields
+		res['params'] = params
+		res['command'] = command
+		return res
 
 	def ceHex(self,nums):
 		if len(nums)<3:
@@ -236,10 +224,10 @@ class Duckpiler():
 		b1 = self.numToHex(nums['b1'])
 		b2 = self.numToHex(nums['b2'])
 		b3 = self.numToHex(nums['b3'])
-		
+
 		c = b1+b2+b3
-		
-		print("%s,%s,%s = %s!!!! "%(b1,b2,b3,c))
+
+		print(f"{b1},{b2},{b3} = {c}!!!! ")
 		return c
 
 	def ceBuildPayload(self,ceBuffer):
@@ -248,9 +236,9 @@ class Duckpiler():
 		hi = '…………ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()……………_+{}|…:"~<>?'
 		mod = 0
 		key = 0
-	
-		for i in range(0,len(ceBuffer)):
-			for x in range(0,len(lo)):
+
+		for i in range(len(ceBuffer)):
+			for x in range(len(lo)):
 				hexPayload = {}
 				if ceBuffer[i] == lo[x]:
 					mod = 0 
@@ -261,7 +249,7 @@ class Duckpiler():
 						'b3':key
 					}
 					cePayload+=self.ceHex(hexPayload)
-			for y in range(0,len(hi)):
+			for y in range(len(hi)):
 				hexPayload = {}
 				if ceBuffer[i] == hi[y]:
 					mod = 2
@@ -271,7 +259,7 @@ class Duckpiler():
 						'b2':mod,
 						'b3':key
 					}
-					print(y)
+					print(key)
 					cePayload+=self.ceHex(hexPayload)
 		return cePayload
 			
@@ -299,7 +287,7 @@ class Duckpiler():
 			print(c,end=" ")
 			print(k,end=" ")
 			print(m,end=' |\n')
-			cePayload+="01"+self.numToHex(m)+self.numToHex(k)		
+			cePayload += f"01{self.numToHex(m)}{self.numToHex(k)}"
 		return cePayload
 		
 	def isHex(self,hstr):
@@ -309,12 +297,12 @@ class Duckpiler():
 		except:
 			return False
 		
-	def toHex(self,rchr):	
+	def toHex(self,rchr):
 		try:
 			s=str(format(rchr,"X"))
 			if len(s)==1:
-				s="0"+s
-			print("attempting to process %s to %s"%(str(rchr),s))
+				s = f"0{s}"
+			print(f"attempting to process {str(rchr)} to {s}")
 			return s
 		except KeyError:
 			return None
@@ -336,7 +324,6 @@ class Duckpiler():
 		upper_command = parsed_line['command']
 		if "REM" in upper_command:
 			logging.info("processLine - REM/Comment detecfted and skipping...")
-			pass
 		elif upper_command in self.commands():
 			logging.info("processLine - Found handler for command '%s', passing to handler..." % upper_command)
 			c =(self.commands())[upper_command](parsed_line)
@@ -348,16 +335,19 @@ class Duckpiler():
 	
 	def readFile(self,fn):
 		self.cePayload = '' # reset our payload if we're reading a file 
-		output = []
 		if os.path.exists(fn):
+			output = []
 			with open(fn) as sf:
-				logging.info("readFile - Begging processing of file %s " % fn)
+				logging.info(f"readFile - Begging processing of file {fn} ")
 				script_contents = sf.readlines()
-				for script_line in script_contents.split("\n"):
-					output.append(self.processLine(script_line))
+				output.extend(
+					self.processLine(script_line)
+					for script_line in script_contents.split("\n")
+				)
+
 			return output
 		else:
-			logging.error("readFile - Error file %s does not exist!" % fn)
+			logging.error(f"readFile - Error file {fn} does not exist!")
 
 	def encodeArg(self,prefix,cmdarg):
 		output = ""
@@ -367,7 +357,7 @@ class Duckpiler():
 			i+=1
 		if (len(cmdarg)%2) > 0:
 			output += prefix + self.charToHex(cmdarg[-1]) + "00"
-		return (output+";")
+		return f"{output};"
 			
 	def cmd_waitforpresent(self,processed_line):
 		# processed line should contain all fields we need to begin checking
@@ -375,7 +365,7 @@ class Duckpiler():
 		waitForBSSID = None
 		waitForMinutes = None
 		waitForInterval = None
-		
+
 		# do set values
 		if "SSID" in processed_line['fields']:
 			waitForSSID = processed_line['fields']['SSID']
@@ -390,7 +380,7 @@ class Duckpiler():
 			waitForMinutes = processed_line['fields']['MINUTES']
 		elif "INTERVAL" in processed_line['fields']:
 			waitForMinutes = processed_line['fields']['INTERVAL']
-		
+
 		# do checks - ssid
 		if waitForBSSID is not None and waitForSSID is not None:
 			logging.error("cmd_waitforpresent - Error SSID and BSSID both set, one or the other only must be set")
@@ -398,7 +388,7 @@ class Duckpiler():
 		elif (waitForMinutes is not None or waitForInterval is not None) and (waitForSSID is None and waitForBSSID is None):
 			logging.error("cmd_waitforpresent - Error wait for minutes or interval is set but no SSID/BSSID is set!")
 			return False
-		
+
 		# do checks
 		if waitForSSID:
 			prefix="28"
@@ -415,24 +405,23 @@ class Duckpiler():
 				logging.error("cmd_waitforpresent - Error minutes cannot be greater then 60 or less then 0")
 				return False
 			minutes = self.numToHex(waitForMinutes)
-		
+
 		interval = "03"
 		if waitForInterval:
 			if int(waitForInterval)>255 or int(waitForInterval)<0:
 				logging.error("cmd_waitforpresent - Error interval must be greater then 0 and less then 255")
 				return False
 			interval = self.numToHex(waitForInterval)
-		
-		# run stuff
-		output = prefix + "0106"
-		
-		output+=self.encodeArg(prefix,processArg)
-		
-		output += prefix + "02" + minutes; # MINUTES
-		output += prefix + "03" + interval; # INTERVAL
-		output += prefix + "0407"; # END
 
-		return (output+";")
+		# run stuff
+		output = f"{prefix}0106"
+
+		output+=self.encodeArg(prefix,processArg)
+
+		output += f"{prefix}02{minutes}"
+		output += f"{prefix}03{interval}"
+		output += f"{prefix}0407"
+		return f"{output};"
 	
 	def cmd_waitfornotpresent(self,processed_line):
 		# processed line should contain all fields we need to begin checking
@@ -440,7 +429,7 @@ class Duckpiler():
 		waitForBSSID = None
 		waitForMinutes = None
 		waitForInterval = None
-		
+
 		# do set values
 		if "SSID" in processed_line['fields']:
 			waitForSSID = processed_line['fields']['SSID']
@@ -455,7 +444,7 @@ class Duckpiler():
 			waitForMinutes = processed_line['fields']['MINUTES']
 		elif "INTERVAL" in processed_line['fields']:
 			waitForMinutes = processed_line['fields']['INTERVAL']
-		
+
 		# do checks - ssid
 		if waitForBSSID is not None and waitForSSID is not None:
 			logging.error("cmd_waitfornotpresent - Error SSID and BSSID both set, one or the other only must be set")
@@ -463,7 +452,7 @@ class Duckpiler():
 		elif (waitForMinutes is not None or waitForInterval is not None) and (waitForSSID is None and waitForBSSID is None):
 			logging.error("cmd_waitfornotpresent - Error wait for minutes or interval is set but no SSID/BSSID is set!")
 			return False
-		
+
 		payloadVal = ""
 		# do checks
 		if waitForSSID:
@@ -474,7 +463,7 @@ class Duckpiler():
 			payloadVal = waitForBSSID
 		else:
 			logging.error("cmd_waitfornotpresent - ERROR INVALID PREFIX")
-			
+
 		# more checks
 		minutes = "00"
 		if waitForMinutes:
@@ -482,24 +471,23 @@ class Duckpiler():
 				logging.error("cmd_waitfornotpresent - Error minutes cannot be greater then 60 or less then 0")
 				return False
 			minutes = self.numToHex(waitForMinutes)
-		
+
 		interval = "03"
 		if waitForInterval:
 			if int(waitForInterval)>255 or int(waitForInterval)<0:
 				logging.error("cmd_waitfornotpresent - Error interval must be greater then 0 and less then 255")
 				return False
 			interval = self.numToHex(waitForInterval)
-		
+
 		# run stuff
-		output = prefix + "0106"
+		output = f"{prefix}0106"
 
 		output+=self.encodeArg(prefix,payloadVal)
 
-		output += prefix + "02" + minutes; # MINUTES
-		output += prefix + "03" + interval; # INTERVAL
-		output += prefix + "0407"; # END
-
-		return (output+";")
+		output += f"{prefix}02{minutes}"
+		output += f"{prefix}03{interval}"
+		output += f"{prefix}0407"
+		return f"{output};"
 	
 	def cmd_ifpresent(self,processed_line):
 		presentSSID = None
@@ -520,7 +508,7 @@ class Duckpiler():
 			# by removing - (as the javascript does) we remove the signal dB units which can be both positive or negative
 			# we follow the javascript but this may change later. 
 			presentSignal = str(processed_line['fields']['SIGNAL']).replace("-","")
-		
+
 		# now validate
 		if presentSSID is not None and presentBSSID is not None:
 			logging.error("cmd_ifpresent - Error SSID and BSSID both set, one or the other only must be set")
@@ -535,18 +523,18 @@ class Duckpiler():
 			payloadVal = presentBSSID
 		else:
 			logging.error("cmd_ifpresent - ERROR INVALID PREFIX")
-		
-		
+
+
 		# add everything together
-		output = prefix + "0106"
+		output = f"{prefix}0106"
 		i = 0
 		output+=self.encodeArg(prefix,payloadVal)
 
 		if presentSignal:
-			output += prefix + "02" + self.numToHex(presentSignal)
-		output+=prefix+"0307" # ending 
-		
-		return (output+";")
+			output += f"{prefix}02{self.numToHex(presentSignal)}"
+		output += f"{prefix}0307"
+
+		return f"{output};"
 	
 	def cmd_ifnotpresent(self,processed_line):
 		presentSSID = None
@@ -567,7 +555,7 @@ class Duckpiler():
 			# by removing - (as the javascript does) we remove the signal dB units which can be both positive or negative
 			# we follow the javascript but this may change later. 
 			presentSignal = str(processed_line['fields']['SIGNAL']).replace("-","")
-	
+
 		# now validate
 		if presentSSID is not None and presentBSSID is not None:
 			logging.error("cmd_ifnotpresent - Error SSID and BSSID both set, one or the other only must be set")
@@ -582,94 +570,94 @@ class Duckpiler():
 			payloadVal = presentBSSID
 		else:
 			logging.error("cmd_ifnotpresent - ERROR INVALID PREFIX")
-		
+
 		# add everything together
-		output = prefix + "0106"
+		output = f"{prefix}0106"
 		i = 0
 		output+=self.encodeArg(prefix,payloadVal)
 
 		if presentSignal:
-			output += prefix + "02" + self.numToHex(presentSignal)
-		output+=prefix+"0307" # ending 
-		
-		return (output+";")
+			output += f"{prefix}02{self.numToHex(presentSignal)}"
+		output += f"{prefix}0307"
+
+		return f"{output};"
 
 	def cmd_vid(self,processed_line):
-		prefix = "0E"
-		output = ""
 		if len(processed_line['fields'])>=1:
 			field = processed_line['fields'][0]
+			output = ""
 			if self.isHex(field):
-				output+=prefix+field 
-			return (output+";")
+				prefix = "0E"
+				output+=prefix+field
+			return f"{output};"
 		return None
 
 	def cmd_pid(self,processed_line):
-		prefix = "0F"
-		output = ""
 		if len(processed_line['fields'])>=1:
 			field = processed_line['fields'][0]
+			output = ""
 			if self.isHex(field):
-				output+=prefix+field 
-			return (output+";")
+				prefix = "0F"
+				output+=prefix+field
+			return f"{output};"
 		return None
 	
 	def cmd_man(self,processed_line):
-		prefix = "15"
-		output = prefix + "0106"
 		if len(processed_line['fields'])>=1:
 			field = processed_line['fields'][0]
 			i = 0
+			prefix = "15"
+			output = f"{prefix}0106"
 			output+=self.encodeArg(prefix,field)
-			output+=prefix+"0207"
-			return (output+";")
+			output += f"{prefix}0207"
+			return f"{output};"
 		return None
 
 	def cmd_pro(self,processed_line):
-		prefix = "16"
-		output = prefix + "0106"
 		if len(processed_line['fields'])>=1:
 			field = processed_line['fields'][0]
 			i = 0
+			prefix = "16"
+			output = f"{prefix}0106"
 			output+=self.encodeArg(prefix,field)
-			output+=prefix+"0207"
+			output += f"{prefix}0207"
 		return None
 
 	def cmd_ser(self,processed_line):
-		prefix = "17"
-		output = prefix + "0106"
 		if len(processed_line['fields'])>=1:
 			field = processed_line['fields'][0]
 			i = 0
+			prefix = "17"
+			output = f"{prefix}0106"
 			output+=self.encodeArg(prefix,field)
-			output+=prefix+"0207"
+			output += f"{prefix}0207"
 		return None
 	
 	def cmd_usb(self,processed_line):
 		output = ""
 		if len(processed_line['fields'])>=1:
 			usb_state = str(processed_line['fields'][0]).upper()
-			if usb_state=="ON" or usb_state=='1':
+			if usb_state in {"ON", '1'}:
 				output+="100001"
-			elif usb_state=="OFF" or usb_state=='0':
+			elif usb_state in {"OFF", '0'}:
 				output+="100000"
-		return (output+";")
+		return f"{output};"
 
 	def cmd_jiggler(self,processed_line):
 		output = ""
 		if len(processed_line['fields'])>=1:
 			usb_state = str(processed_line['fields'][0]).upper()
-			if usb_state=="ON" or usb_state=='1':
+			if usb_state in {"ON", '1'}:
 				output+="110001"
-			elif usb_state=="OFF" or usb_state=='0':
+			elif usb_state in {"OFF", '0'}:
 				output+="110000"
-		return (output+";")
+		return f"{output};"
 	
 	def cmd_mouse(self,processed_line):
 		output = ""
 		if len(processed_line['params'])<2:
 			logging.error("Invalid params for MOUSE")
-			return (output+";")
+			return f"{output};"
 		if str(processed_line['params'][0]).upper() == "CLICK":
 			output += "0500" + self.numToHex(processed_line['params'][1])
 		elif str(processed_line['params'][0]).upper() == "MOVE":
@@ -680,51 +668,40 @@ class Duckpiler():
 			# i don't understand this logic fully yet
 			if (x<0) and (y<0):
 				if abs_x>255:
-					while(abs_x>255):
-						output+="04" + self.numToHex(99) + self.numToHex(0)
+					while (abs_x>255):
+						output += f"04{self.numToHex(99)}{self.numToHex(0)}"
 						abs_x-=256
-				output+="04" + self.numToHex(x) + self.numToHex(0)
+				output += f"04{self.numToHex(x)}{self.numToHex(0)}"
 				if abs_y>255:
 					while abs_y>255:
-						output+="04" + self.numToHex(0) + self.numToHex(255)
+						output += f"04{self.numToHex(0)}{self.numToHex(255)}"
 						abs_y-=256
-				output+="04" + self.numToHex(0) + self.numToHex(y)
-			elif (x<0) and (y>=0):
+				output += f"04{self.numToHex(0)}{self.numToHex(y)}"
+			elif x < 0:
 				if abs_x>255:
-					while(abs_x>255):
-						output+="04" + self.numToHex(255) + self.numToHex(0)
+					while (abs_x>255):
+						output += f"04{self.numToHex(255)}{self.numToHex(0)}"
 						abs_x-=256
-				output+="04" + self.numToHex(x) + self.numToHex(0)
+				output += f"04{self.numToHex(x)}{self.numToHex(0)}"
 				if abs_y>255:
 					while abs_y>255:
-						output+="03" + self.numToHex(0) + self.numToHex(255)
+						output += f"03{self.numToHex(0)}{self.numToHex(255)}"
 						abs_y-=256
-				output+="03" + self.numToHex(0) +	self.numToHex(y)	+ ""
-			elif (x>=0) and (y<0):
+				output += f"03{self.numToHex(0)}{self.numToHex(y)}"
+			elif y < 0:
 				if abs_x>255:
-					while(abs_x>255):
-						output+="03" + self.numToHex(255) + self.numToHex(0)
+					while (abs_x>255):
+						output += f"03{self.numToHex(255)}{self.numToHex(0)}"
 						abs_x-=256
-				output+="03" + self.numToHex(x) + self.numToHex(0)
+				output += f"03{self.numToHex(x)}{self.numToHex(0)}"
 				if abs_y>255:
 					while abs_y>255:
-						output+="04" + self.numToHex(0) + self.numToHex(255)
+						output += f"04{self.numToHex(0)}{self.numToHex(255)}"
 						abs_y-=256
-				output+="04" + self.numToHex(0) + self.numToHex(y)
-			elif (x<0) and (y>=0):
-				if abs_x>255:
-					while(abs_x>255):
-						output+="03" + self.numToHex(255) + self.numToHex(0)
-						abs_x-=256
-				output+="03" + self.numToHex(x) + self.numToHex(0)
-				if abs_y>255:
-					while abs_y>255:
-						output+="03" + self.numToHex(0) + self.numToHex(255)
-						abs_y-=256
-				output+="03" + self.numToHex(0) + self.numToHex(y)
+				output += f"04{self.numToHex(0)}{self.numToHex(y)}"
 		else:
 			logging.error("MOUSE did not find valid command")
-		return (output+";")
+		return f"{output};"
 
 	def processKey(self,processed_line,lookup_value=None):
 		if lookup_value is None:
@@ -733,8 +710,8 @@ class Duckpiler():
 			lookup_value = str(lookup_value).lower() # why not?
 		output=""
 		if lookup_value in self.mapping:
-			output += "0100" + self.numToHex(self.mapping[lookup_value])
-		return (output+";")
+			output += f"0100{self.numToHex(self.mapping[lookup_value])}"
+		return f"{output};"
 
 	def processModifier(self,processed_line,iModify=1):
 		output=""
@@ -769,7 +746,7 @@ class Duckpiler():
 					iModify+=modValues[lookup_value]
 				print("4IMOD:%d"%iModify)
 
-		output+="01" + self.numToHex(iModify)
+		output += f"01{self.numToHex(iModify)}"
 		lookup_value = None 
 
 		if len(processed_line['fields'])==1:
@@ -788,7 +765,7 @@ class Duckpiler():
 			output+=self.numToHex(mapped_value)				
 		else:
 			output+="00"
-		return (output+";")
+		return f"{output};"
 	
 	def cmd_ctrl(self,processed_line):
 		return self.processModifier(processed_line,1)
@@ -822,45 +799,45 @@ class Duckpiler():
 	
 	def cmd_delay(self,processed_line):
 		output=""
-		prefix="02"
 		bDelay=False
 		if len(processed_line['fields'])<1:
 			logging.error("cmd_delay - too few arguments to delay")
-			return None	
+			return None
 		iDelay=int(processed_line['fields'][0])
 		if iDelay>255:
+			prefix="02"
 			while iDelay>255:
 				if not bDelay:
-					output+=prefix + "01FF"
+					output += f"{prefix}01FF"
 					bDelay=True
 				else:
-					output+=prefix + "02FF"
+					output += f"{prefix}02FF"
 				iDelay-=256
 			if not bDelay:
-				output+=prefix + "0100"
-			output += prefix + "03" + self.numToHex(iDelay)
-		return (output+";")
+				output += f"{prefix}0100"
+			output += f"{prefix}03{self.numToHex(iDelay)}"
+		return f"{output};"
 	
 	def cmd_neuter(self,processed_line):
 		output="140000"
-		return (output+";")
+		return f"{output};"
 	
 	def cmd_string(self,processed_line):
 		f = " ".join(processed_line['fields'])
 		p = self.ceBuildPayload(f)
-		print("converting %s to %s"%(str(f),str(p)))
+		print(f"converting {f} to {str(p)}")
 		output = p
-		return (output+";")
+		return f"{output};"
 		
 	def cmd_selfdestruct(self,processed_line):
 		output="130000"
-		return (output+";")
+		return f"{output};"
 			
 class OMGInterface():
 	def __init__(self,url):
 		self.soc = None
 		self.url = None
-		
+
 		if self.soc is None and url is not None:
 			self.url = url
 			self.connectSocket(self.url)
@@ -872,12 +849,12 @@ class OMGInterface():
 		except:
 			return False
 		
-	def toHex(self,rchr):	
+	def toHex(self,rchr):
 		try:
 			s=str(format(rchr,"x"))
 			if len(s)==1:
-				s="0"+s
-			print("attempting to process %s to %s"%(str(rchr),s))
+				s = f"0{s}"
+			print(f"attempting to process {str(rchr)} to {s}")
 			return s
 		except KeyError:
 			return None
@@ -895,7 +872,7 @@ class OMGInterface():
 			return None
 			
 	def connectSocket(self,url):
-		print("Connecting to URL: %s"%url)
+		print(f"Connecting to URL: {url}")
 		tries = 3
 		success = False
 		while (tries>0 and not success):
@@ -922,10 +899,7 @@ class OMGInterface():
 			return None
 
 	def recv(self):
-		if self.soc is not None:
-			return self.soc.recv()
-		else:
-			return None 
+		return self.soc.recv() if self.soc is not None else None 
 
 	# cmd: loadslot1-7
 	def loadPayload(self,slot):
@@ -937,10 +911,10 @@ class OMGInterface():
 		if slot > len(user_addresses):
 			logging.error("loadPayload -> slot wrong index")
 		buff_len = 1024
-		for i in range(0,16):
+		for i in range(16):
 			user_addr = user_addresses[slot] + (i*1024)
 			print("addr:%d+%d=%d"%(user_addresses[slot],(i*1024),user_addr))
-			cmd = "FR" + str(user_addr) + "\t" + str(buff_len)
+			cmd = f"FR{str(user_addr)}" + "\t" + str(buff_len)
 			self.send(cmd)
 			r = (self.recv()).split(b"\t")
 			cmd,size,output=r
@@ -951,11 +925,11 @@ class OMGInterface():
 	def checkBoot(self):
 		user_addr = 851968 # (0x7C000 + 0x3000) + 0x800;
 		buff_len = 4
-		cmd = "FR" + str(user_addr) + "\t" + str(buff_len)
+		cmd = f"FR{user_addr}" + "\t" + str(buff_len)
 		self.send(cmd)
 		r = self.recv()
 		cmd,mem,s = r.split(b'\t')
-		return bool(s[0]==0x01)
+		return s[0] == 0x01
 	
 	# cmd: toggleboot
 	def toggleBoot(self,s=True):
@@ -987,10 +961,10 @@ class OMGInterface():
 			"3": "AUTH_WPA2_PSK",
 			"4": "AUTH_WPA_WPA2_PSK"
 		}
-		for i in range(0,4):
+		buff_len = 1024
+		for i in range(4):
 			user_addr = user_addresses[i]
-			buff_len = 1024
-			cmd = "FR" + str(user_addr) + "\t" + str(buff_len)
+			cmd = f"FR{str(user_addr)}" + "\t" + str(buff_len)
 			self.send(cmd)
 			c,s,r = (self.recv()).split(b"\t")
 			output+=r
@@ -1009,7 +983,7 @@ class OMGInterface():
 			ap_type = str(comps[0],'utf-8')
 			if ap_type in ap_types:
 				network['ap_type']=ap_types[ap_type]
-			
+
 			networks.append(network)
 		return networks	
 
@@ -1017,18 +991,16 @@ class OMGInterface():
 	def getWifi(self):
 		self.send("WI")
 		r = self.recv().split(b'\t')
-		network = {
-			'ssid':str(r[1],'utf-8'),
-			'password':str(r[2],'utf-8'),
-			'mac':str(r[3],'utf-8'),
-			'channel':int(str(r[4],'utf-8'))
+		return {
+			'ssid': str(r[1], 'utf-8'),
+			'password': str(r[2], 'utf-8'),
+			'mac': str(r[3], 'utf-8'),
+			'channel': int(str(r[4], 'utf-8')),
 		}
-		return network
 
 	# cmd: setwifi (sub parse args --mode= --ssid= --password --channel --mac)
 	def changeWifi(self,mode,ssid,password,channel,mac):
-		st="W"
-		st+=str(mode) # 1 = station, 2 = client
+		st = "W" + str(mode)
 		st+="\t"+str(ssid)
 		st+="\t"+str(password)
 		st+="\t"+str(mac)
@@ -1053,7 +1025,7 @@ class OMGInterface():
 	def sendJigglerToggle(self,s=True):
 		jiggler_state = bool(s)
 		# this can probably be accomplished by int(jiggler_state)
-		cmd_line = "CJ"+str(int(jiggler_state))+"\t"
+		cmd_line = f"CJ{int(jiggler_state)}" + "\t"
 		self.send(cmd_line)
 
 	# cmd: enable*usb, disable*usb
@@ -1062,15 +1034,15 @@ class OMGInterface():
 		if not usb_state:
 			self.sendJigglerToggle(0)
 		# this can probably be accomplished by int(jiggler_state)
-		cmd_line = "CU"+str(int(usb_state))+"\t"
+		cmd_line = f"CU{int(usb_state)}" + "\t"
 		self.send(cmd_line)
 
 	
 	def erasePayload(self,slot):
 		user_addresses = [720896, 737280, 753664, 770048, 786432, 802816, 819200]
 		operations = [176, 180, 184, 188, 192, 196, 200, 204]
-		for i in range(0,4):
-			cmd = "FE" + str(operations[int(slot)]+i)
+		for i in range(4):
+			cmd = f"FE{str(operations[int(slot)]+i)}"
 			self.send(cmd)
 	
 	def writeScript(self,slot,script):
@@ -1079,48 +1051,46 @@ class OMGInterface():
 		if segments == 0:
 			segments = 1
 		self.erasePayload(slot)
-		for i in range(0,segments):
+		for i in range(segments):
 			starto = i*512
 			endo = starto+512
 			parsement=script[starto:endo]
 			alignment = ceil(len(parsement)/4)*4 # math, not even once
 			user_addr = user_addresses[int(slot)]+starto
-			cmd = "FW" + str(user_addr) + "\t" + str(alignment) + "\t" + parsement
+			cmd = f"FW{str(user_addr)}" + "\t" + str(alignment) + "\t" + parsement
 			self.send(cmd)
 	
 	def splitProcess(self,payload):
 		split_payloads = []
 		if float(len(payload)/936) > 1.0:
 			ops = ceil(len(payload)/936)
-			for i in range(0,ops):
-				distance = 936
+			distance = 936
+			for i in range(ops):
 				starto = i*distance
 				endo = starto+distance
 				parsement=payload[starto:endo]
 				# do the thing
-				this_sof = "20" + self.numToHex(i+1) +  self.numToHex(ops)
-				this_eof = "30" +  self.numToHex(i+1) + self.numToHex(ops)
+				this_sof = f"20{self.numToHex(i+1)}{self.numToHex(ops)}"
+				this_eof = f"30{self.numToHex(i+1)}{self.numToHex(ops)}"
 				split_payloads.append(this_sof + parsement + this_eof)
 		else:
-				ops = ceil(len(payload)/936)
-				this_sof = "20" + self.numToHex(1) +  self.numToHex(ops)
-				this_eof = "30" + self.numToHex(1) + self.numToHex(ops)
-				split_payloads.append(this_sof + payload + this_eof);
+			ops = ceil(len(payload)/936)
+			this_sof = f"20{self.numToHex(1)}{self.numToHex(ops)}"
+			this_eof = f"30{self.numToHex(1)}{self.numToHex(ops)}"
+			split_payloads.append(this_sof + payload + this_eof);
 		print(split_payloads)
 		return split_payloads
 	
 	def encodePayload(self,commands):
 		compiler = Duckpiler()
 		output=""
-		i=1
-		for command in commands:
-				print("command",end=" ")
-				print(command)
-				o=compiler.processLine(command)
-				if o is None:
-					print("Error! Command invalid on line %d"%i)
-				i+=1
-				output+=o
+		for i, command in enumerate(commands, start=1):
+			print("command",end=" ")
+			print(command)
+			o=compiler.processLine(command)
+			if o is None:
+				print("Error! Command invalid on line %d"%i)
+			output+=o
 		return output.replace(";","")
 	
 	def runPayload(self,raw_script):
@@ -1129,7 +1099,7 @@ class OMGInterface():
 		payload = self.encodePayload(raw_script)
 		split_payloads = self.splitProcess(payload)
 		for split_payload in split_payloads:
-			cmd = "ce" + split_payload + "\n"
+			cmd = f"ce{split_payload}" + "\n"
 			self.send(cmd)
 		return True
 
@@ -1142,14 +1112,14 @@ class OMGInterface():
 		iterations = ceil(len(buff/512))
 		if interations == 0:
 			iterations = 1
-		for i in range(0,iterations):
+		for i in range(iterations):
 			starto = i*512
 			endo = starto+512
 			parsement = buff[starto:endo]
 			alignment = ceil(len(parsement)/4)*4
 			user_addr = 835584 + (i*512)
-			cmd = "FW" + str(user_addr) + "\t" + str(alignment) + "\t" + parsement
-			self.send(cmd)	
+			cmd = f"FW{str(user_addr)}" + "\t" + str(alignment) + "\t" + parsement
+			self.send(cmd)
 		self.send("FX851968\t4\t01000000")
 		sleep(1)
 		return True
@@ -1159,30 +1129,25 @@ class OMGInterface():
 ## WRITER TO SOCKET 
 class OMGWriter(threading.Thread):
     def __init__(self, ipaddr, slot,input_script,pretty_slot=None):
-        super(OMGWriter, self).__init__()
-        self.ip_addr = ipaddr
-        url = "ws://%s/d/ws/issue"%self.ip_addr
-        self.omgsock = OMGInterface(url)
-        self.slot = slot
-        self.ogscript = input_script
-        self.script = self.fix_script(input_script)
-        self.pretty_slot = str(int(slot)+1)
-        if pretty_slot:
-        	self.pretty_slot = pretty_slot
-        self.keepRunning = True
+    	super(OMGWriter, self).__init__()
+    	self.ip_addr = ipaddr
+    	url = f"ws://{self.ip_addr}/d/ws/issue"
+    	self.omgsock = OMGInterface(url)
+    	self.slot = slot
+    	self.ogscript = input_script
+    	self.script = self.fix_script(input_script)
+    	self.pretty_slot = str(int(slot)+1)
+    	if pretty_slot:
+    		self.pretty_slot = pretty_slot
+    	self.keepRunning = True
         
     def fix_script(self,input_script):
-    	# just try to clean up stuff we don't want
-    	new_output = []
     	temp_input_script = []
     	if "\n" in input_script and isinstance(input_script,str):
     		temp_input_script=input_script.split("\n")
     	else:
     		temp_input_script=input_script
-    	# now redo
-    	for l in temp_input_script:
-    		new_output.append(l.replace("\\n","").replace("\r",""))
-    	return new_output
+    	return [l.replace("\\n","").replace("\r","") for l in temp_input_script]
     	
     def upload(self):
     	if self.slot == 8: # we are boot payload
@@ -1192,7 +1157,10 @@ class OMGWriter(threading.Thread):
     
     def run(self):
     	i = 0
-    	print("The thread for %s and slot %s is starting.."%(str(self.ip_addr),pretty_slot))
+    	print(
+    		f"The thread for {str(self.ip_addr)} and slot {pretty_slot} is starting.."
+    	)
+
     	while self.keepRunning:
     		print("In thread for %s and slot %s, %d."%(str(self.ip_addr),pretty_slot,i))
     		i+=1
@@ -1202,7 +1170,9 @@ class OMGWriter(threading.Thread):
     		# and wait
     		sleep(2)
     		i+1
-    	print("The thread for %s and slot %s is now complete... Ending."%(str(self.ip_addr),pretty_slot))
+    	print(
+    		f"The thread for {str(self.ip_addr)} and slot {pretty_slot} is now complete... Ending."
+    	)
 
 
 def arg_help(p,msg):
